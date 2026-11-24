@@ -1,0 +1,59 @@
+------------
+SW1
+------------
+
+enable
+conf t
+no ip domain-lookup 
+line console 0
+ login local
+ exec-timeout 10 0
+ logging synchronous
+exit
+service password-encryption
+banner motd #EL ACCESO NO AUTORIZADO ESTA PROHIBIDO#
+hostname SW1
+ip domain-name donapanch.lan
+spanning-tree mode rapid-pvst
+
+vtp domain SWMC
+vtp version 2
+vtp password cisco123
+vtp mode client
+
+interface Gi0/0
+ description Troncal a SWMC
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 90
+ switchport trunk allowed vlan 30,40,50,90
+ switchport nonegotiate
+
+interface Gi0/1
+ description LAN hacia SERVIDOR
+ switchport mode access
+ switchport access vlan 50
+ spanning-tree portfast
+
+interface range Gi0/2 - 3
+ description Sin uso - Blackhull
+ switchport mode access
+ switchport access vlan 90
+ shutdown
+
+interface Vlan50
+ description Administracion
+ ip address 172.18.10.3 255.255.255.192
+ ipv6 address 2001:25:18:4::3/64
+ no shutdown
+ip routing
+ip route 0.0.0.0 0.0.0.0 172.18.10.1
+
+enable secret cisco123
+username ADMIN privilege 15 secret cisco123
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 15
+ login local
+ transport input ssh

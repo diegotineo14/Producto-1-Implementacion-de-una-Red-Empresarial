@@ -1,0 +1,121 @@
+----
+SWMC
+----
+
+enable
+conf t
+no ip domain-lookup 
+line console 0
+ login local
+ exec-timeout 10 0
+ logging synchronous
+exit
+service password-encryption
+banner motd #EL ACCESO NO AUTORIZADO ESTA PROHIBIDO#
+hostname SWMC
+ip domain-name donapanch.lan
+ip name-server 172.18.10.2
+spanning-tree mode rapid-pvst
+spanning-tree vlan 30,40,50,90 priority 4096
+
+vtp domain SWMC
+vtp version 2
+vtp password cisco123
+vtp mode server
+
+vlan 30
+ name Academicos
+vlan 40
+ name Finanzas
+vlan 50
+ name Datacenter
+vlan 90
+ name Blackhull-SWMC
+
+interface range Gi0/0, Gi0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 90
+ switchport trunk allowed vlan 30,40,50,90
+ switchport nonegotiate
+
+interface Gi0/0
+ description Troncal a SW2
+interface Gi0/2
+ description Troncal a SW1
+
+ip routing
+ipv6 unicast-routing
+
+ipv6 dhcp pool DNS-V6
+ dns-server 2001:25:18:4::2
+ domain-name donapanch.lan
+
+interface Vlan30
+ description SVI Academicos
+ ip address 172.18.9.1 255.255.255.128
+ ipv6 address 2001:25:18:2::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+ no shutdown
+
+interface Vlan40
+ description SVI Finanzas
+ ip address 172.18.9.129 255.255.255.128
+ ipv6 address 2001:25:18:3::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+ no shutdown
+
+interface Vlan50
+ description SVI Datacenter
+ ip address 172.18.10.1 255.255.255.192
+ ipv6 address 2001:25:18:4::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+ no shutdown
+
+interface Gi0/1
+ description LAN A R1
+ no switchport
+ ip address 172.18.10.161 255.255.255.252
+ ipv6 address 2001:25:18:9::1/64
+ no shutdown
+
+ip route 0.0.0.0 0.0.0.0 172.18.10.162
+ipv6 route ::/0 2001:25:18:9::2
+
+ip dhcp excluded-address 172.18.9.1 172.18.9.10
+ip dhcp excluded-address 172.18.9.129 172.18.9.138
+ip dhcp excluded-address 172.18.10.1 172.18.10.10
+
+ip dhcp pool Academicos
+ network 172.18.9.0 255.255.255.128
+ default-router 172.18.9.1
+ dns-server 172.18.10.2
+ domain-name donapanch.lan
+ip dhcp pool Finanzas
+ network 172.18.9.128 255.255.255.128
+ default-router 172.18.9.129
+ dns-server 172.18.10.2
+ domain-name donapanch.lan
+ip dhcp pool Datacenter
+ network 172.18.10.0 255.255.255.192
+ default-router 172.18.10.1
+ dns-server 172.18.10.2
+ domain-name donapanch.lan
+
+interface Gi0/3
+ description NO ASIGNADOS
+ switchport mode access
+ switchport access vlan 90
+ shutdown
+
+enable secret cisco123
+username ADMIN privilege 15 secret cisco123
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 15
+login local
+transport input ssh

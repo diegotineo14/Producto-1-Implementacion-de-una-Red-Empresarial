@@ -1,0 +1,44 @@
+# PONEMOS LA IP FIJA
+
+IFACE=$(ls /sys/class/net | grep -v -e '^lo$' -e '^ens3$' | head -1); echo $IFACE
+sudo tee /etc/netplan/60-dns.yaml > /dev/null <<EOF
+network:
+  version: 2
+  ethernets:
+    $IFACE:
+      addresses: [172.18.10.2/26, "2001:25:18:4::2/64"]
+      routes:
+        - {to: 0.0.0.0/0, via: 172.18.10.1, metric: 500}
+        - {to: "::/0", via: "2001:25:18:4::1", metric: 500}
+EOF
+sudo chmod 600 /etc/netplan/60-dns.yaml
+sudo netplan apply
+
+# Instalamos ens3
+
+sudo apt update && sudo apt install -y dnsmasq dnsutils
+
+# Configuramos
+
+sudo tee /etc/dnsmasq.conf > /dev/null <<'EOF'
+no-resolv
+bind-interfaces
+listen-address=172.18.10.2
+listen-address=2001:25:18:4::2
+local=/donapanch.lan/
+domain=donapanch.lan
+log-queries
+log-facility=/var/log/dnsmasq.log
+host-record=servidor.donapanch.lan,172.18.10.2,2001:25:18:4::2
+host-record=swmc.donapanch.lan,172.18.10.1,2001:25:18:4::1
+host-record=r1.donapanch.lan,172.18.10.65,2001:25:18:5::1
+host-record=sw1.donapanch.lan,172.18.10.3,2001:25:18:4::3
+host-record=sw2.donapanch.lan,172.18.10.4,2001:25:18:4::4
+host-record=sw3.donapanch.lan,172.18.10.66,2001:25:18:5::2
+host-record=sw4.donapanch.lan,172.18.10.67,2001:25:18:5::3
+EOF
+
+# Reiniciamos
+
+sudo systemctl restart dnsmasq
+sudo systemctl is-active dnsmasq

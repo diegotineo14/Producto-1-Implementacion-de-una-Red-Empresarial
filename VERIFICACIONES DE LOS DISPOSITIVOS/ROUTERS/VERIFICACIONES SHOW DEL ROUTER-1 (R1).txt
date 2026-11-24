@@ -1,0 +1,539 @@
+--------------------------------------
+VERIFICACIONES SHOW DEL ROUTER-1 (R1)
+--------------------------------------
+
+-------------------
+SHOW RUNNING-CONFIG
+-------------------
+
+R1#SHOW RUNNING-CONFIG
+Building configuration...
+
+Current configuration : 5382 bytes
+!
+! Last configuration change at 22:26:39 UTC Mon Nov 9 2026
+!
+version 15.9
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 9 $9$Wq2ojySf/3pPTf$iNOVz9p.gpWKbIrWD51tUwXk9gG8ZBh2Mt1eGgFGmSk
+!
+no aaa new-model
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!                 
+!         
+ip dhcp excluded-address 172.18.0.1 172.18.0.10
+ip dhcp excluded-address 172.18.8.1 172.18.8.10
+ip dhcp excluded-address 172.18.10.65 172.18.10.67
+ip dhcp excluded-address 172.18.10.97 172.18.10.106
+!         
+ip dhcp pool Estudiantes
+ network 172.18.0.0 255.255.248.0
+ default-router 172.18.0.1 
+ dns-server 172.18.10.2 
+ domain-name donapanch.lan
+!         
+ip dhcp pool Docentes
+ network 172.18.8.0 255.255.255.0
+ default-router 172.18.8.1 
+ dns-server 172.18.10.2 
+ domain-name donapanch.lan
+!         
+ip dhcp pool Gestion
+ network 172.18.10.64 255.255.255.224
+ default-router 172.18.10.65 
+ dns-server 172.18.10.2 
+ domain-name donapanch.lan
+!         
+ip dhcp pool Voz
+ network 172.18.10.96 255.255.255.224
+ default-router 172.18.10.97 
+ dns-server 172.18.10.2 
+ domain-name donapanch.lan
+!         
+!         
+!         
+no ip domain lookup
+ip domain name donapanch.lan
+ip name-server 172.18.10.2
+ip cef    
+ipv6 unicast-routing
+ipv6 cef  
+ipv6 dhcp pool DNS-V6
+ dns-server 2001:25:18:4::2
+ domain-name donapanch.lan
+!         
+!         
+multilink bundle-name authenticated
+!         
+!         
+!         
+!         
+username ADMIN privilege 15 secret 9 $9$BJnZvhQRrsh2wf$YEe79R/WFmuZgmGDnmoldRdNSjIMMJrfTWEiK12p986
+!         
+redundancy
+!                
+!         
+interface GigabitEthernet0/0
+ description LAN a SWMC
+ ip address 172.18.10.162 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+ ipv6 address 2001:25:18:9::2/64
+!         
+interface GigabitEthernet0/1
+ description Troncal a SW3
+ no ip address
+ duplex auto
+ speed auto
+ media-type rj45
+!         
+interface GigabitEthernet0/1.10
+ description Estudiantes
+ encapsulation dot1Q 10
+ ip address 172.18.0.1 255.255.248.0
+ ipv6 address 2001:25:18::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+!         
+interface GigabitEthernet0/1.20
+ description Docentes
+ encapsulation dot1Q 20
+ ip address 172.18.8.1 255.255.255.0
+ ipv6 address 2001:25:18:1::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+!         
+interface GigabitEthernet0/1.60
+ description Gestion
+ encapsulation dot1Q 60
+ ip address 172.18.10.65 255.255.255.224
+ ipv6 address 2001:25:18:5::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+!         
+interface GigabitEthernet0/1.70
+ description Voz
+ encapsulation dot1Q 70
+ ip address 172.18.10.97 255.255.255.224
+ ipv6 address 2001:25:18:6::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+!         
+interface GigabitEthernet0/2
+ description NO ASIGNADOS
+ no ip address
+ shutdown 
+ duplex auto
+ speed auto
+ media-type rj45
+!         
+interface GigabitEthernet0/3
+ description NO ASIGNADOS
+ no ip address
+ shutdown 
+ duplex auto
+ speed auto
+ media-type rj45
+!         
+ip forward-protocol nd
+!         
+!         
+no ip http server
+no ip http secure-server
+ip route 172.18.9.0 255.255.255.128 172.18.10.161
+ip route 172.18.9.128 255.255.255.128 172.18.10.161
+ip route 172.18.10.0 255.255.255.192 172.18.10.161
+ip ssh version 2
+!         
+ipv6 route 2001:25:18:2::/64 2001:25:18:9::1
+ipv6 route 2001:25:18:3::/64 2001:25:18:9::1
+ipv6 route 2001:25:18:4::/64 2001:25:18:9::1
+ipv6 ioam timestamp
+!         
+!         
+!         
+control-plane
+!         
+banner exec ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner incoming ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner login ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner motd ^CEL ACCESO NO AUTORIZADO ESTA PROHIBIDO^C
+!         
+line con 0
+ logging synchronous
+ login local
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!         
+no scheduler allocate
+!         
+end       
+          
+R1#
+
+-----------------------
+SHOW IP INTERFACE BRIEF
+-----------------------
+
+R1#SHOW IP INTERFACE BRIEF
+Interface                  IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0         172.18.10.162   YES NVRAM  up                    up      
+GigabitEthernet0/1         unassigned      YES NVRAM  up                    up      
+GigabitEthernet0/1.10      172.18.0.1      YES NVRAM  up                    up      
+GigabitEthernet0/1.20      172.18.8.1      YES NVRAM  up                    up      
+GigabitEthernet0/1.60      172.18.10.65    YES NVRAM  up                    up      
+GigabitEthernet0/1.70      172.18.10.97    YES NVRAM  up                    up      
+GigabitEthernet0/2         unassigned      YES NVRAM  administratively down down    
+GigabitEthernet0/3         unassigned      YES NVRAM  administratively down down    
+R1#
+
+-------------------------
+SHOW IPV6 INTERFACE BRIEF
+-------------------------
+
+R1#SHOW IPV6 INTERFACE BRIEF
+GigabitEthernet0/0     [up/up]
+    FE80::5054:FF:FE18:395C
+    2001:25:18:9::2
+GigabitEthernet0/1     [up/up]
+    unassigned
+GigabitEthernet0/1.10  [up/up]
+    FE80::5054:FF:FE0F:61C5
+    2001:25:18::1
+GigabitEthernet0/1.20  [up/up]
+    FE80::5054:FF:FE0F:61C5
+    2001:25:18:1::1
+GigabitEthernet0/1.60  [up/up]
+    FE80::5054:FF:FE0F:61C5
+    2001:25:18:5::1
+GigabitEthernet0/1.70  [up/up]
+    FE80::5054:FF:FE0F:61C5
+    2001:25:18:6::1
+GigabitEthernet0/2     [administratively down/down]
+    unassigned
+GigabitEthernet0/3     [administratively down/down]
+    unassigned
+R1#
+
+-------------
+SHOW IP ROUTE
+-------------
+
+R1#SHOW IP ROUTE
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+
+Gateway of last resort is not set
+
+      172.18.0.0/16 is variably subnetted, 13 subnets, 7 masks
+C        172.18.0.0/21 is directly connected, GigabitEthernet0/1.10
+L        172.18.0.1/32 is directly connected, GigabitEthernet0/1.10
+C        172.18.8.0/24 is directly connected, GigabitEthernet0/1.20
+L        172.18.8.1/32 is directly connected, GigabitEthernet0/1.20
+S        172.18.9.0/25 [1/0] via 172.18.10.161
+S        172.18.9.128/25 [1/0] via 172.18.10.161
+S        172.18.10.0/26 [1/0] via 172.18.10.161
+C        172.18.10.64/27 is directly connected, GigabitEthernet0/1.60
+L        172.18.10.65/32 is directly connected, GigabitEthernet0/1.60
+C        172.18.10.96/27 is directly connected, GigabitEthernet0/1.70
+L        172.18.10.97/32 is directly connected, GigabitEthernet0/1.70
+C        172.18.10.160/30 is directly connected, GigabitEthernet0/0
+L        172.18.10.162/32 is directly connected, GigabitEthernet0/0
+R1#
+
+---------------
+SHOW IPV6 ROUTE
+---------------
+
+R1#SHOW IPV6 ROUTE
+IPv6 Routing Table - default - 14 entries
+Codes: C - Connected, L - Local, S - Static, U - Per-user Static route
+       B - BGP, HA - Home Agent, MR - Mobile Router, R - RIP
+       H - NHRP, I1 - ISIS L1, I2 - ISIS L2, IA - ISIS interarea
+       IS - ISIS summary, D - EIGRP, EX - EIGRP external, NM - NEMO
+       ND - ND Default, NDp - ND Prefix, DCE - Destination, NDr - Redirect
+       RL - RPL, O - OSPF Intra, OI - OSPF Inter, OE1 - OSPF ext 1
+       OE2 - OSPF ext 2, ON1 - OSPF NSSA ext 1, ON2 - OSPF NSSA ext 2
+       la - LISP alt, lr - LISP site-registrations, ld - LISP dyn-eid
+       lA - LISP away, a - Application
+C   2001:25:18::/64 [0/0]
+     via GigabitEthernet0/1.10, directly connected
+L   2001:25:18::1/128 [0/0]
+     via GigabitEthernet0/1.10, receive
+C   2001:25:18:1::/64 [0/0]
+     via GigabitEthernet0/1.20, directly connected
+L   2001:25:18:1::1/128 [0/0]
+     via GigabitEthernet0/1.20, receive
+S   2001:25:18:2::/64 [1/0]
+     via 2001:25:18:9::1
+S   2001:25:18:3::/64 [1/0]
+     via 2001:25:18:9::1
+S   2001:25:18:4::/64 [1/0]
+     via 2001:25:18:9::1
+C   2001:25:18:5::/64 [0/0]
+     via GigabitEthernet0/1.60, directly connected
+L   2001:25:18:5::1/128 [0/0]
+     via GigabitEthernet0/1.60, receive
+C   2001:25:18:6::/64 [0/0]
+     via GigabitEthernet0/1.70, directly connected
+L   2001:25:18:6::1/128 [0/0]
+     via GigabitEthernet0/1.70, receive
+C   2001:25:18:9::/64 [0/0]
+     via GigabitEthernet0/0, directly connected
+L   2001:25:18:9::2/128 [0/0]
+     via GigabitEthernet0/0, receive
+L   FF00::/8 [0/0]
+     via Null0, receive
+R1#
+
+----------
+SHOW VLANS
+----------
+
+R1#SHOW VLANS
+
+Virtual LAN ID:  1 (IEEE 802.1Q Encapsulation)
+
+   vLAN Trunk Interface:   GigabitEthernet0/1
+
+ This is configured as native Vlan for the following interface(s) :
+GigabitEthernet0/1    Native-vlan Tx-type: Untagged
+
+   Protocols Configured:   Address:              Received:        Transmitted:
+
+GigabitEthernet0/1 (1)
+        Other                                           0                1223
+
+   223 packets, 89996 bytes input
+   1223 packets, 103996 bytes output
+
+Virtual LAN ID:  10 (IEEE 802.1Q Encapsulation)
+
+   vLAN Trunk Interface:   GigabitEthernet0/1.10
+
+   Protocols Configured:   Address:              Received:        Transmitted:
+
+GigabitEthernet0/1.10 (10)
+           IP              172.18.0.1                  12                  11
+           IPV6            2001:25:18::1           0                  82
+        Other                                           0                   6
+          
+   13 packets, 1751 bytes input
+   99 packets, 11260 bytes output
+          
+Virtual LAN ID:  20 (IEEE 802.1Q Encapsulation)
+          
+   vLAN Trunk Interface:   GigabitEthernet0/1.20
+          
+   Protocols Configured:   Address:              Received:        Transmitted:
+          
+GigabitEthernet0/1.20 (20)
+           IP              172.18.8.1                  12                  11
+           IPV6            2001:25:18:1::1           0                  84
+        Other                                           0                   6
+          
+   13 packets, 1751 bytes input
+   101 packets, 11504 bytes output
+          
+Virtual LAN ID:  60 (IEEE 802.1Q Encapsulation)
+          
+   vLAN Trunk Interface:   GigabitEthernet0/1.60
+          
+   Protocols Configured:   Address:              Received:        Transmitted:
+          
+GigabitEthernet0/1.60 (60)
+           IP              172.18.10.65                82                  79
+           IPV6            2001:25:18:5::1           0                 108
+        Other                                           0                   8
+          
+   111 packets, 12339 bytes input
+   195 packets, 21724 bytes output
+          
+Virtual LAN ID:  70 (IEEE 802.1Q Encapsulation)
+          
+   vLAN Trunk Interface:   GigabitEthernet0/1.70
+          
+   Protocols Configured:   Address:              Received:        Transmitted:
+          
+GigabitEthernet0/1.70 (70)
+           IP              172.18.10.97                 0                   0
+           IPV6            2001:25:18:6::1           0                  82
+        Other                                           0                   4
+          
+   0 packets, 0 bytes input
+   86 packets, 9556 bytes output
+          
+R1#
+
+-----------------
+SHOW IP DHCP POOL
+-----------------
+
+R1#SHOW IP DHCP POOL
+
+Pool Estudiantes :
+ Utilization mark (high/low)    : 100 / 0
+ Subnet size (first/next)       : 0 / 0 
+ Total addresses                : 2046
+ Leased addresses               : 1
+ Pending event                  : none
+ 1 subnet is currently in the pool :
+ Current index        IP address range                    Leased addresses
+ 172.18.0.12          172.18.0.1       - 172.18.7.254      1
+
+Pool Docentes :
+ Utilization mark (high/low)    : 100 / 0
+ Subnet size (first/next)       : 0 / 0 
+ Total addresses                : 254
+ Leased addresses               : 1
+ Pending event                  : none
+ 1 subnet is currently in the pool :
+ Current index        IP address range                    Leased addresses
+ 172.18.8.12          172.18.8.1       - 172.18.8.254      1
+
+Pool Gestion :
+ Utilization mark (high/low)    : 100 / 0
+ Subnet size (first/next)       : 0 / 0 
+ Total addresses                : 30
+ Leased addresses               : 1
+ Pending event                  : none
+ 1 subnet is currently in the pool :
+ Current index        IP address range                    Leased addresses
+ 172.18.10.69         172.18.10.65     - 172.18.10.94      1
+          
+Pool Voz :
+ Utilization mark (high/low)    : 100 / 0
+ Subnet size (first/next)       : 0 / 0 
+ Total addresses                : 30
+ Leased addresses               : 0
+ Pending event                  : none
+ 1 subnet is currently in the pool :
+ Current index        IP address range                    Leased addresses
+ 172.18.10.97         172.18.10.97     - 172.18.10.126     0
+R1#
+
+--------------------
+SHOW IP DHCP BINDING
+--------------------
+
+R1#SHOW IP DHCP BINDING
+Bindings from all pools not associated with VRF:
+IP address          Client-ID/              Lease expiration        Type
+                    Hardware address/
+                    User name
+172.18.0.11         0152.5400.15a8.b2       Nov 10 2026 08:37 PM    Automatic
+172.18.8.11         0152.5400.09ab.74       Nov 10 2026 08:37 PM    Automatic
+172.18.10.68        0152.5400.030f.ef       Nov 10 2026 08:37 PM    Automatic
+R1#
+
+-------------------
+SHOW IPV6 DHCP POOL
+-------------------
+
+R1#SHOW IPV6 DHCP POOL
+DHCPv6 pool: DNS-V6
+  DNS server: 2001:25:18:4::2
+  Domain name: donapanch.lan
+  Active clients: 0
+R1#
+
+------------------
+SHOW CDP NEIGHBORS
+------------------
+
+R1#SHOW CDP NEIGHBORS
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone, 
+                  D - Remote, C - CVTA, M - Two-port Mac Relay 
+
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+SWMC.donapanch.lan
+                 Gig 0/0           129             R S I            Gig 0/1
+SW3.donapanch.lan
+                 Gig 0/1           158             R S I            Gig 0/0
+
+Total cdp entries displayed : 2
+R1#
+
+-----------
+SHOW IP SSH
+-----------
+
+R1#SHOW IP SSH
+SSH Enabled - version 2.0
+Authentication methods:publickey,keyboard-interactive,password
+Authentication Publickey Algorithms:x509v3-ssh-rsa,ssh-rsa
+Hostkey Algorithms:x509v3-ssh-rsa,ssh-rsa
+Encryption Algorithms:aes128-ctr,aes192-ctr,aes256-ctr
+MAC Algorithms:hmac-sha2-256,hmac-sha2-512,hmac-sha1,hmac-sha1-96
+KEX Algorithms:diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1
+Authentication timeout: 120 secs; Authentication retries: 3
+Minimum expected Diffie Hellman key size : 2048 bits
+IOS Keys in SECSH format(ssh-rsa, base64 encoded): R1.donapanch.lan
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqU6SY0Fos5/+GoFKSrUR0KZKX0ifUubl8aAByeIHy
+BpkoAqwfFmh8ot61qkHk2cA/jsDet/1ZZHXH1hMvGzr/L4bhKjY4q4X4XLZNwJmn/cMlkyDDnJFBKWeC
+z/w3gAflwGDdSpTeCMGt1K2/ASy/GjOmUISzBgBCeqTn57CGm+LOeUbJA/kD3GBmrr+FhUlxYUPvAaBf
+b/DS5tliKLo3hmJrBRqA/8YNCvnRNHZHQdWwSt/7mGTTA7hdH+ElbagPOyKayQ0q8agoA2LousNcA7OI
+enIKoIimUTvVVr0yWqceixJ4yGnuiWnXvq/7Naed+UVBxE0Eui3lEUaAeMQz                    
+R1#
+
+----------
+SHOW USERS
+----------
+
+R1#SHOW USERS
+    Line       User       Host(s)              Idle       Location
+*  0 con 0     ADMIN      idle                 00:00:00   
+
+  Interface    User               Mode         Idle     Peer Address
+
+R1#

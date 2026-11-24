@@ -1,0 +1,129 @@
+----------------------------------
+VERIFICACIONES SHOW DEL DNS-UBUNTU
+----------------------------------
+
+-------------------------------
+cat /etc/netplan/99-static.yaml
+-------------------------------
+
+root@inserthostname-here:~# cat /etc/netplan/99-static.yaml
+
+network:
+  version: 2
+  ethernets:
+    ens2:
+      dhcp4: false
+      dhcp6: false
+      accept-ra: false
+      addresses:
+        - 172.18.10.2/26
+        - 2001:25:18:4::2/64
+      routes:
+        - to: 0.0.0.0/0
+          via: 172.18.10.1
+        - to: "::/0"
+          via: 2001:25:18:4::1
+      nameservers:
+        addresses: [172.18.10.2]
+root@inserthostname-here:~# 
+
+---------------------------------
+cat /etc/dnsmasq.d/donapanch.conf
+---------------------------------
+
+root@inserthostname-here:~# cat /etc/dnsmasq.d/donapanch.conf
+
+port=53
+bind-interfaces
+listen-address=172.18.10.2
+listen-address=2001:25:18:4::2
+no-resolv
+domain-needed
+local=/donapanch.lan/
+log-queries
+host-record=servidor.donapanch.lan,172.18.10.2,2001:25:18:4::2
+host-record=dns.donapanch.lan,172.18.10.2,2001:25:18:4::2
+host-record=swmc.donapanch.lan,172.18.10.1,2001:25:18:4::1
+host-record=sw1.donapanch.lan,172.18.10.3,2001:25:18:4::3
+host-record=sw2.donapanch.lan,172.18.10.4,2001:25:18:4::4
+host-record=r1.donapanch.lan,172.18.10.65,2001:25:18:5::1
+host-record=sw3.donapanch.lan,172.18.10.66,2001:25:18:5::2
+host-record=sw4.donapanch.lan,172.18.10.67,2001:25:18:5::3
+root@inserthostname-here:~# 
+
+----------------------------
+systemctl is-enabled dnsmasq
+----------------------------
+
+root@inserthostname-here:~# systemctl is-enabled dnsmasq
+enabled
+root@inserthostname-here:~#
+
+--------------------------------------
+systemctl status dnsmasq --no-pager -l
+--------------------------------------
+
+root@inserthostname-here:~# systemctl status dnsmasq --no-pager -l
+● dnsmasq.service - dnsmasq - A lightweight DHCP and caching DNS server
+     Loaded: loaded (/usr/lib/systemd/system/dnsmasq.service; enabled; preset: enabled)
+     Active: active (running) since Mon 2026-11-09 21:51:22 UTC; 1h 45min ago
+    Process: 1989 ExecStartPre=/usr/share/dnsmasq/systemd-helper checkconfig (code=exited, status=0/SUCCESS)
+    Process: 1995 ExecStart=/usr/share/dnsmasq/systemd-helper exec (code=exited, status=0/SUCCESS)
+    Process: 2002 ExecStartPost=/usr/share/dnsmasq/systemd-helper start-resolvconf (code=exited, status=0/SUCCESS)
+   Main PID: 2000 (dnsmasq)
+      Tasks: 1 (limit: 2320)
+     Memory: 760.0K (peak: 2.2M)
+        CPU: 34ms
+     CGroup: /system.slice/dnsmasq.service
+             └─2000 /usr/sbin/dnsmasq -x /run/dnsmasq/dnsmasq.pid -u dnsmasq -r /run/dnsmasq/resolv.conf -7 /etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new --local-service --trust-anchor=.,20326,8,2,E06D44B80B8F1D39A95C0B0D7C65D08458E880409BBC683457104237C7F8EC8D --trust-anchor=.,38696,8,2,683D2D0ACB8C9B712A1948B27F741219298D0A450D612C483AF444A4C0FB2B16
+
+Nov 09 23:32:00 inserthostname-here dnsmasq[2000]: query[AAAA] ntp.ubuntu.com from 172.18.10.2
+Nov 09 23:32:00 inserthostname-here dnsmasq[2000]: config error is REFUSED (EDE: not ready)
+Nov 09 23:32:00 inserthostname-here dnsmasq[2000]: query[A] ntp.ubuntu.com from 172.18.10.2
+Nov 09 23:32:00 inserthostname-here dnsmasq[2000]: config error is REFUSED (EDE: not ready)
+Nov 09 23:32:00 inserthostname-here dnsmasq[2000]: query[AAAA] ntp.ubuntu.com from 172.18.10.2
+Nov 09 23:32:00 inserthostname-here dnsmasq[2000]: config error is REFUSED (EDE: not ready)
+Nov 09 23:32:00 inserthostname-here dnsmasq[2000]: query[A] ntp.ubuntu.com from 172.18.10.2
+Nov 09 23:32:00 inserthostname-here dnsmasq[2000]: config error is REFUSED (EDE: not ready)
+Nov 09 23:32:00 inserthostname-here dnsmasq[2000]: query[AAAA] ntp.ubuntu.com from 172.18.10.2
+Nov 09 23:32:00 inserthostname-here dnsmasq[2000]: config error is REFUSED (EDE: not ready)
+root@inserthostname-here:~# 
+
+--------
+ip -br a
+--------
+
+root@inserthostname-here:~# ip -br a
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+ens2             UP             172.18.10.2/26 2001:25:18:4::2/64 fe80::5054:ff:fe09:4146/64 
+ens3             UP             fe80::5054:ff:fe1e:584e/64 
+root@inserthostname-here:~# 
+
+--------
+ip route
+--------
+
+root@inserthostname-here:~# ip route
+default via 172.18.10.1 dev ens2 proto static 
+172.18.10.0/26 dev ens2 proto kernel scope link src 172.18.10.2 
+root@inserthostname-here:~# 
+
+-----------
+ip -6 route
+-----------
+
+root@inserthostname-here:~# ip -6 route
+2001:25:18:4::/64 dev ens2 proto kernel metric 256 pref medium
+fe80::/64 dev ens2 proto kernel metric 256 pref medium
+fe80::/64 dev ens3 proto kernel metric 256 pref medium
+default via 2001:25:18:4::1 dev ens2 proto static metric 1024 pref medium
+root@inserthostname-here:~# 
+
+-----------------------
+ss -lunp | grep dnsmasq
+-----------------------
+
+root@inserthostname-here:~# ss -lunp | grep dnsmasq
+UNCONN 0      0            172.18.10.2:53        0.0.0.0:*    users:(("dnsmasq",pid=2000,fd=4))        
+UNCONN 0      0      [2001:25:18:4::2]:53           [::]:*    users:(("dnsmasq",pid=2000,fd=6))        
+root@inserthostname-here:~# 

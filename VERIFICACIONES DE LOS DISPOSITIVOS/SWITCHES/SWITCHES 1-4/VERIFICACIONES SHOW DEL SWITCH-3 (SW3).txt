@@ -1,0 +1,367 @@
+--------------------------------------
+VERIFICACIONES SHOW DEL SWITCH-3 (SW3)
+--------------------------------------
+
+-------------------
+SHOW RUNNING-CONFIG
+-------------------
+
+SW3#SHOW RUNNING-CONFIG
+Building configuration...
+
+Current configuration : 4248 bytes
+!
+! Last configuration change at 22:26:53 UTC Mon Nov 9 2026
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+service compress-config
+!
+hostname SW3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$/4Zz$951Vh54j/bWUqKLC3jMq3.
+!
+username ADMIN privilege 15 secret 5 $1$x3gD$dMr7Zqj2bm/6UtfVHnKkw1
+no aaa new-model
+!       
+!         
+!         
+no ip domain-lookup
+ip domain-name donapanch.lan
+ip cef    
+no ipv6 cef
+!         
+!         
+!         
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+spanning-tree vlan 10,20,60,70,80 priority 4096
+!         
+!                 
+!         
+interface Port-channel1
+ switchport trunk allowed vlan 10,20,60,70,80
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 80
+ switchport mode trunk
+ switchport nonegotiate
+!         
+interface GigabitEthernet0/0
+ description Troncal a R1
+ switchport trunk allowed vlan 10,20,60,70,80
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 80
+ switchport mode trunk
+ switchport nonegotiate
+ negotiation auto
+!         
+interface GigabitEthernet0/1
+ description EtherChannel a SW4
+ switchport trunk allowed vlan 10,20,60,70,80
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 80
+ switchport mode trunk
+ switchport nonegotiate
+ negotiation auto
+ channel-group 1 mode active
+!         
+interface GigabitEthernet0/2
+ description EtherChannel a SW4
+ switchport trunk allowed vlan 10,20,60,70,80
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 80
+ switchport mode trunk
+ switchport nonegotiate
+ negotiation auto
+ channel-group 1 mode active
+!         
+interface GigabitEthernet0/3
+ description NO ASIGNADOS
+ switchport access vlan 80
+ switchport mode access
+ shutdown 
+ negotiation auto
+!         
+interface GigabitEthernet1/0
+ description LAN hacia DOC1
+ switchport access vlan 20
+ switchport mode access
+ negotiation auto
+ spanning-tree portfast edge
+!         
+interface Vlan60
+ description Administracion
+ ip address 172.18.10.66 255.255.255.224
+ ipv6 address 2001:25:18:5::2/64
+!         
+ip forward-protocol nd
+!         
+ip http server
+ip http secure-server
+!         
+ip route 0.0.0.0 0.0.0.0 172.18.10.65
+ip ssh version 2
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!                
+!         
+control-plane
+!         
+banner exec ^C
+IOSv - Cisco Systems Confidential -
+          
+          
+Supplemental End User License Restrictions
+          
+          
+This IOSv software is provided AS-IS without warranty of any kind. Under no circumstances may this software be used separate from the Cisco Modeling Labs Software that this software was provided with, or deployed or used as part of a production environment.
+          
+          
+By using the software, you agree to abide by the terms and conditions of the Cisco End User License Agreement at http://www.cisco.com/go/eula. Unauthorized use or distribution of this software is expressly prohibited.
+^C        
+banner incoming ^C
+IOSv - Cisco Systems Confidential -
+          
+          
+Supplemental End User License Restrictions
+          
+          
+This IOSv software is provided AS-IS without warranty of any kind. Under no circumstances may this software be used separate from the Cisco Modeling Labs Software that this software was provided with, or deployed or used as part of a production environment.
+          
+          
+By using the software, you agree to abide by the terms and conditions of the Cisco End User License Agreement at http://www.cisco.com/go/eula. Unauthorized use or distribution of this software is expressly prohibited.
+^C        
+banner login ^C
+IOSv - Cisco Systems Confidential -
+          
+          
+Supplemental End User License Restrictions
+          
+          
+This IOSv software is provided AS-IS without warranty of any kind. Under no circumstances may this software be used separate from the Cisco Modeling Labs Software that this software was provided with, or deployed or used as part of a production environment.
+          
+          
+By using the software, you agree to abide by the terms and conditions of the Cisco End User License Agreement at http://www.cisco.com/go/eula. Unauthorized use or distribution of this software is expressly prohibited.
+^C        
+banner motd ^CEL ACCESO NO AUTORIZADO ESTA PROHIBIDO^C
+!         
+line con 0
+ logging synchronous
+ login local
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+line vty 5 15
+ login local
+ transport input ssh
+!         
+!         
+end       
+          
+SW3#
+
+---------------
+SHOW VTP STATUS
+---------------
+
+SW3#SHOW VTP STATUS
+VTP Version capable             : 1 to 3
+VTP version running             : 2
+VTP Domain Name                 : R1
+VTP Pruning Mode                : Disabled
+VTP Traps Generation            : Disabled
+Device ID                       : 5254.0004.8000
+Configuration last modified by 0.0.0.0 at 11-9-26 17:18:32
+Local updater ID is 172.18.10.66 on interface Vl60 (lowest numbered VLAN interface found)
+
+Feature VLAN:
+--------------
+VTP Operating Mode                : Server
+Maximum VLANs supported locally   : 1005
+Number of existing VLANs          : 10
+Configuration Revision            : 6
+MD5 digest                        : 0x2B 0x23 0x4B 0xCF 0x3D 0x2B 0x44 0xFA 
+                                    0x2D 0x62 0x8B 0xEE 0xC3 0xF4 0xD5 0x56 
+SW3#
+
+-------------------------
+SHOW ETHERCHANNEL SUMMARY
+-------------------------
+
+SW3#SHOW ETHERCHANNEL SUMMARY
+Flags:  D - down        P - bundled in port-channel
+        I - stand-alone s - suspended
+        H - Hot-standby (LACP only)
+        R - Layer3      S - Layer2
+        U - in use      N - not in use, no aggregation
+        f - failed to allocate aggregator
+
+        M - not in use, minimum links not met
+        m - not in use, port not aggregated due to minimum links not met
+        u - unsuitable for bundling
+        w - waiting to be aggregated
+        d - default port
+
+        A - formed by Auto LAG
+
+
+Number of channel-groups in use: 1
+Number of aggregators:           1
+
+Group  Port-channel  Protocol    Ports
+------+-------------+-----------+-----------------------------------------------
+1      Po1(SU)         LACP      Gi0/1(P)    Gi0/2(P)    
+
+SW3#
+
+-----------------------
+SHOW SPANNING-TREE ROOT
+-----------------------
+
+SW3#SHOW SPANNING-TREE ROOT
+
+                                        Root    Hello Max Fwd
+Vlan                   Root ID          Cost    Time  Age Dly  Root Port
+---------------- -------------------- --------- ----- --- ---  ------------
+VLAN0010          4106 5254.0004.019c         0    2   20  15                  
+VLAN0020          4116 5254.0004.019c         0    2   20  15                  
+VLAN0060          4156 5254.0004.019c         0    2   20  15                  
+VLAN0070          4166 5254.0004.019c         0    2   20  15                  
+VLAN0080          4176 5254.0004.019c         0    2   20  15                  
+SW3#
+
+---------------
+SHOW VLAN BRIEF
+---------------
+
+SW3#SHOW VLAN BRIEF
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    
+10   Estudiantes                      active    
+20   Docentes                         active    Gi1/0
+60   Gestion                          active    
+70   Voz                              active    
+80   Blackhull-R1                     active    Gi0/3
+1002 fddi-default                     act/unsup 
+1003 trcrf-default                    act/unsup 
+1004 fddinet-default                  act/unsup 
+1005 trbrf-default                    act/unsup 
+SW3#
+
+---------------------
+SHOW INTERFACES TRUNK
+---------------------
+
+SW3#SHOW INTERFACES TRUNK
+
+Port        Mode             Encapsulation  Status        Native vlan
+Gi0/0       on               802.1q         trunking      80
+Po1         on               802.1q         trunking      80
+
+Port        Vlans allowed on trunk
+Gi0/0       10,20,60,70,80
+Po1         10,20,60,70,80
+
+Port        Vlans allowed and active in management domain
+Gi0/0       10,20,60,70,80
+Po1         10,20,60,70,80
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Gi0/0       10,20,60,70,80
+Po1         10,20,60,70,80
+SW3#
+
+----------------------
+SHOW INTERFACES STATUS
+----------------------
+
+SW3#SHOW INTERFACES STATUS
+
+Port      Name               Status       Vlan       Duplex  Speed Type 
+Gi0/0     Troncal a R1       connected    trunk      a-full   auto RJ45
+Gi0/1     EtherChannel a SW4 connected    trunk      a-full   auto RJ45
+Gi0/2     EtherChannel a SW4 connected    trunk      a-full   auto RJ45
+Gi0/3     NO ASIGNADOS       disabled     80           auto   auto RJ45
+Gi1/0     LAN hacia DOC1     connected    20         a-full   auto RJ45
+Po1                          connected    trunk      a-full   auto 
+SW3#
+
+-----------------------
+SHOW IP INTERFACE BRIEF
+-----------------------
+
+SW3#SHOW IP INTERFACE BRIEF
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0     unassigned      YES unset  up                    up      
+GigabitEthernet0/1     unassigned      YES unset  up                    up      
+GigabitEthernet0/2     unassigned      YES unset  up                    up      
+GigabitEthernet0/3     unassigned      YES unset  administratively down down    
+GigabitEthernet1/0     unassigned      YES unset  up                    up      
+Port-channel1          unassigned      YES unset  up                    up      
+Vlan60                 172.18.10.66    YES NVRAM  up                    up      
+SW3#
+
+-------------
+SHOW IP ROUTE
+-------------
+
+SW3#SHOW IP ROUTE
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+
+Gateway of last resort is 172.18.10.65 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 172.18.10.65
+      172.18.0.0/16 is variably subnetted, 2 subnets, 2 masks
+C        172.18.10.64/27 is directly connected, Vlan60
+L        172.18.10.66/32 is directly connected, Vlan60
+SW3#
+
+-----------
+SHOW IP SSH
+-----------
+
+SW3#SHOW IP SSH
+SSH Enabled - version 2.0
+Authentication methods:publickey,keyboard-interactive,password
+Authentication Publickey Algorithms:x509v3-ssh-rsa,ssh-rsa
+Hostkey Algorithms:x509v3-ssh-rsa,ssh-rsa
+Encryption Algorithms:aes128-ctr,aes192-ctr,aes256-ctr
+MAC Algorithms:hmac-sha1,hmac-sha1-96
+Authentication timeout: 120 secs; Authentication retries: 3
+Minimum expected Diffie Hellman key size : 1024 bits
+IOS Keys in SECSH format(ssh-rsa, base64 encoded): SW3.donapanch.lan
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCn3UAK4IFfLOI5UfbLCgnTjKE3r1QHuaPojKj88I0X
+WZBySCaQlmrtZN9NgYBM3Y6IQB/B012Brs9WtN7tB7eOggn/jXapubDj8UOWXPa0nb04SLy/XHyYAUbK
+cpTvGeoyCDfL1bBiRo1sYuY7E5EWBswABrT04zi9y5/ZrLKJ4JhE3UgGoyDew/4xXMZ/+wH7Y8H8wDvF
+YlBPQZxr05fP3SVZwEZcLdO6tVeE9rwn7Qm3EDVqdDK13p7uCmr2Rt8dhOrShgpYPA6PWTMQUtEbWZPP
+VyGzV+DSdBlcCcnJ6M2ZIm5ZgVU1iwmmIl5n+6+0Z/rmruo9wnFy0C2JjYZ/                    
+SW3#
+
+----------
+SHOW USERS
+----------
+
+SW3#SHOW USERS
+    Line       User       Host(s)              Idle       Location
+*  0 con 0     ADMIN      idle                 00:00:00   
+
+  Interface    User               Mode         Idle     Peer Address
+
+SW3#

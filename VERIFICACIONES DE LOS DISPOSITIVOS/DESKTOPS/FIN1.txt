@@ -1,0 +1,49 @@
+----------
+---FIN1---
+----------
+
+
+--------
+ip route
+--------
+
+inserthostname-here:~$ ip route
+default via 172.18.9.129 dev eth0  metric 202 
+172.18.9.128/25 dev eth0 scope link  src 172.18.9.139 
+inserthostname-here:~$ 
+
+-----------
+ip -6 route
+-----------
+
+inserthostname-here:~$ ip -6 route
+2001:25:18:3::/64 dev eth0  metric 256  expires 0sec
+fe80::/64 dev eth0  metric 256 
+default via fe80::5054:ff:fe1b:8028 dev eth0  metric 1024  expires 0sec
+multicast ff00::/8 dev eth0  metric 256 
+inserthostname-here:~$ 
+
+--------------------
+cat /etc/resolv.conf
+--------------------
+
+inserthostname-here:~$ cat /etc/resolv.conf
+search donapanch.lan
+nameserver 172.18.10.2
+inserthostname-here:~$ 
+
+-------------------------
+nslookup r1.donapanch.lan
+-------------------------
+
+inserthostname-here:~$ nslookup r1.donapanch.lan
+Server:         172.18.10.2
+Address:        172.18.10.2:53
+
+Name:   r1.donapanch.lan
+Address: 172.18.10.65
+
+Name:   r1.donapanch.lan
+Address: 2001:25:18:5::1
+
+inserthostname-here:~$ 

@@ -1,0 +1,513 @@
+-----------------------------------------------
+VERIFICACIONES SHOW DEL SWITCH MULTICAPA (SWMC)
+-----------------------------------------------
+
+-------------------
+SHOW RUNNING-CONFIG
+-------------------
+
+SWMC#SHOW RUNNING-CONFIG
+Building configuration...
+
+Current configuration : 4918 bytes
+!
+! Last configuration change at 22:23:24 UTC Mon Nov 9 2026
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+service compress-config
+!
+hostname SWMC
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$HVHg$g.DHxpSAlJ7JUB9pC/.pJ.
+!
+username ADMIN privilege 15 secret 5 $1$MzES$DDHyoz9Qo7wf4cfg4o9kp.
+no aaa new-model
+!         
+!         
+ip dhcp excluded-address 172.18.9.1 172.18.9.10
+ip dhcp excluded-address 172.18.9.129 172.18.9.138
+ip dhcp excluded-address 172.18.10.1 172.18.10.10
+!         
+ip dhcp pool TEST
+!         
+ip dhcp pool Academicos
+ network 172.18.9.0 255.255.255.128
+ default-router 172.18.9.1 
+ dns-server 172.18.10.2 
+ domain-name donapanch.lan
+!         
+ip dhcp pool Finanzas
+ network 172.18.9.128 255.255.255.128
+ default-router 172.18.9.129 
+ dns-server 172.18.10.2 
+ domain-name donapanch.lan
+!         
+ip dhcp pool Datacenter
+ network 172.18.10.0 255.255.255.192
+ default-router 172.18.10.1 
+ dns-server 172.18.10.2 
+ domain-name donapanch.lan
+!         
+!         
+no ip domain-lookup
+ip domain-name donapanch.lan
+ip name-server 172.18.10.2
+ip cef    
+ipv6 unicast-routing
+ipv6 dhcp pool TEST
+!         
+ipv6 dhcp pool DNS-V6
+ dns-server 2001:25:18:4::2
+ domain-name donapanch.lan
+!         
+ipv6 cef  
+!         
+!         
+!         
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+spanning-tree vlan 30,40,50,90 priority 4096
+!                 
+!         
+interface GigabitEthernet0/0
+ description Troncal a SW2
+ switchport trunk allowed vlan 30,40,50,90
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 90
+ switchport mode trunk
+ switchport nonegotiate
+ negotiation auto
+!         
+interface GigabitEthernet0/1
+ description LAN A R1
+ no switchport
+ ip address 172.18.10.161 255.255.255.252
+ negotiation auto
+ ipv6 address 2001:25:18:9::1/64
+!         
+interface GigabitEthernet0/2
+ description Troncal a SW1
+ switchport trunk allowed vlan 30,40,50,90
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 90
+ switchport mode trunk
+ switchport nonegotiate
+ negotiation auto
+!         
+interface GigabitEthernet0/3
+ description NO ASIGNADOS
+ switchport access vlan 90
+ switchport mode access
+ shutdown 
+ negotiation auto
+!         
+interface Vlan30
+ description SVI Academicos
+ ip address 172.18.9.1 255.255.255.128
+ ipv6 address 2001:25:18:2::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+!         
+interface Vlan40
+ description SVI Finanzas
+ ip address 172.18.9.129 255.255.255.128
+ ipv6 address 2001:25:18:3::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+!         
+interface Vlan50
+ description SVI Datacenter
+ ip address 172.18.10.1 255.255.255.192
+ ipv6 address 2001:25:18:4::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+!         
+ip forward-protocol nd
+!         
+ip http server
+ip http secure-server
+!         
+ip route 0.0.0.0 0.0.0.0 172.18.10.162
+ip ssh version 2
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!         
+!         
+ipv6 route ::/0 2001:25:18:9::2
+!                
+!         
+control-plane
+!         
+banner exec ^C
+IOSv - Cisco Systems Confidential -
+          
+          
+Supplemental End User License Restrictions
+          
+          
+This IOSv software is provided AS-IS without warranty of any kind. Under no circumstances may this software be used separate from the Cisco Modeling Labs Software that this software was provided with, or deployed or used as part of a production environment.
+          
+          
+By using the software, you agree to abide by the terms and conditions of the Cisco End User License Agreement at http://www.cisco.com/go/eula. Unauthorized use or distribution of this software is expressly prohibited.
+^C        
+banner incoming ^C
+IOSv - Cisco Systems Confidential -
+          
+          
+Supplemental End User License Restrictions
+          
+          
+This IOSv software is provided AS-IS without warranty of any kind. Under no circumstances may this software be used separate from the Cisco Modeling Labs Software that this software was provided with, or deployed or used as part of a production environment.
+          
+          
+By using the software, you agree to abide by the terms and conditions of the Cisco End User License Agreement at http://www.cisco.com/go/eula. Unauthorized use or distribution of this software is expressly prohibited.
+^C        
+banner login ^C
+IOSv - Cisco Systems Confidential -
+          
+          
+Supplemental End User License Restrictions
+          
+          
+This IOSv software is provided AS-IS without warranty of any kind. Under no circumstances may this software be used separate from the Cisco Modeling Labs Software that this software was provided with, or deployed or used as part of a production environment.
+          
+          
+By using the software, you agree to abide by the terms and conditions of the Cisco End User License Agreement at http://www.cisco.com/go/eula. Unauthorized use or distribution of this software is expressly prohibited.
+^C        
+banner motd ^CEL ACCESO NO AUTORIZADO ESTA PROHIBIDO^C
+!         
+line con 0
+ logging synchronous
+ login local
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+line vty 5 15
+ login local
+ transport input ssh
+!         
+!         
+end       
+          
+SWMC#
+
+---------------
+SHOW VTP STATUS
+---------------
+
+SWMC#SHOW VTP STATUS
+VTP Version capable             : 1 to 3
+VTP version running             : 2
+VTP Domain Name                 : SWMC
+VTP Pruning Mode                : Disabled
+VTP Traps Generation            : Disabled
+Device ID                       : 5254.001b.8000
+Configuration last modified by 0.0.0.0 at 11-9-26 17:15:19
+Local updater ID is 172.18.9.1 on interface Vl30 (lowest numbered VLAN interface found)
+
+Feature VLAN:
+--------------
+VTP Operating Mode                : Server
+Maximum VLANs supported locally   : 1005
+Number of existing VLANs          : 9
+Configuration Revision            : 5
+MD5 digest                        : 0x13 0xCE 0x73 0x32 0xD0 0xEA 0x88 0xC0 
+                                    0xC1 0x2F 0xC8 0xA4 0xAB 0xD1 0xE5 0x7A 
+SWMC#
+
+---------------
+SHOW VLAN BRIEF
+---------------
+
+SWMC#SHOW VLAN BRIEF
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    
+30   Academicos                       active    
+40   Finanzas                         active    
+50   Datacenter                       active    
+90   Blackhull-SWMC                   active    Gi0/3
+1002 fddi-default                     act/unsup 
+1003 trcrf-default                    act/unsup 
+1004 fddinet-default                  act/unsup 
+1005 trbrf-default                    act/unsup 
+SWMC#
+
+---------------------
+SHOW INTERFACES TRUNK
+---------------------
+
+SWMC#SHOW INTERFACES TRUNK
+
+Port        Mode             Encapsulation  Status        Native vlan
+Gi0/0       on               802.1q         trunking      90
+Gi0/2       on               802.1q         trunking      90
+
+Port        Vlans allowed on trunk
+Gi0/0       30,40,50,90
+Gi0/2       30,40,50,90
+
+Port        Vlans allowed and active in management domain
+Gi0/0       30,40,50,90
+Gi0/2       30,40,50,90
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Gi0/0       30,40,50,90
+Gi0/2       30,40,50,90
+SWMC#
+
+----------------------
+SHOW INTERFACES STATUS
+----------------------
+
+SWMC#SHOW INTERFACES STATUS
+
+Port      Name               Status       Vlan       Duplex  Speed Type 
+Gi0/0     Troncal a SW2      connected    trunk      a-full   auto RJ45
+Gi0/1     LAN A R1           connected    routed     a-full   auto RJ45
+Gi0/2     Troncal a SW1      connected    trunk      a-full   auto RJ45
+Gi0/3     NO ASIGNADOS       disabled     90           auto   auto RJ45
+SWMC#
+
+-----------------------
+SHOW IP INTERFACE BRIEF
+-----------------------
+
+SWMC#SHOW IP INTERFACE BRIEF
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0     unassigned      YES unset  up                    up      
+GigabitEthernet0/1     172.18.10.161   YES NVRAM  up                    up      
+GigabitEthernet0/2     unassigned      YES unset  up                    up      
+GigabitEthernet0/3     unassigned      YES unset  administratively down down    
+Vlan30                 172.18.9.1      YES NVRAM  up                    up      
+Vlan40                 172.18.9.129    YES NVRAM  up                    up      
+Vlan50                 172.18.10.1     YES NVRAM  up                    up      
+SWMC#
+
+-------------
+SHOW IP ROUTE
+-------------
+
+SWMC#SHOW IP ROUTE
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+
+Gateway of last resort is 172.18.10.162 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 172.18.10.162
+      172.18.0.0/16 is variably subnetted, 8 subnets, 4 masks
+C        172.18.9.0/25 is directly connected, Vlan30
+L        172.18.9.1/32 is directly connected, Vlan30
+C        172.18.9.128/25 is directly connected, Vlan40
+L        172.18.9.129/32 is directly connected, Vlan40
+C        172.18.10.0/26 is directly connected, Vlan50
+L        172.18.10.1/32 is directly connected, Vlan50
+C        172.18.10.160/30 is directly connected, GigabitEthernet0/1
+L        172.18.10.161/32 is directly connected, GigabitEthernet0/1
+SWMC#
+
+-----------
+SHOW IP SSH
+-----------
+
+SWMC#SHOW IP SSH
+SSH Enabled - version 2.0
+Authentication methods:publickey,keyboard-interactive,password
+Authentication Publickey Algorithms:x509v3-ssh-rsa,ssh-rsa
+Hostkey Algorithms:x509v3-ssh-rsa,ssh-rsa
+Encryption Algorithms:aes128-ctr,aes192-ctr,aes256-ctr
+MAC Algorithms:hmac-sha1,hmac-sha1-96
+Authentication timeout: 120 secs; Authentication retries: 3
+Minimum expected Diffie Hellman key size : 1024 bits
+IOS Keys in SECSH format(ssh-rsa, base64 encoded): SWMC.donapanch.lan
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEYOl2S43uP8NWqIlL4Xn+FR5VEqm50Y/8VALay7CA
+e6l9pzNV2O90pTDIXeBU4CdoOGovUY6ik1BS0fMFRk8sLXEWc1jr+OL1C+BWVp0sr5NjRQyYX2ldYU1/
+YSD2XpM0kd0s4fH4Xct3DtXG9i4Hh4uRryPxlRVRFUfEnvb0v7VKMdPz4GcklmkpE+bly4DvJ7sA9QXV
+F68ga1AJoeMvrG1Dv1cbjHeDTKiJJ9tV4DcetjTCPqzhHOKKVMKNubPDkmktFnG0p7EnBVO1gu84dx7y
++lOGQlF8z/zc0Ljqz1O31QRvv/3rlzHTvSx0GSnI590jF2Jr1tKP1SiL5x6d                    
+SWMC#
+
+----------
+SHOW USERS
+----------
+
+SWMC#SHOW USERS
+    Line       User       Host(s)              Idle       Location
+*  0 con 0     ADMIN      idle                 00:00:00   
+
+  Interface    User               Mode         Idle     Peer Address
+
+SWMC#
+
+-------------------------
+SHOW IPV6 INTERFACE BRIEF
+-------------------------
+
+SWMC#SHOW IPV6 INTERFACE BRIEF
+GigabitEthernet0/0     [up/up]
+    unassigned
+GigabitEthernet0/1     [up/up]
+    FE80::5054:FF:FE10:8227
+    2001:25:18:9::1
+GigabitEthernet0/2     [up/up]
+    unassigned
+GigabitEthernet0/3     [administratively down/down]
+    unassigned
+Vlan30                 [up/up]
+    FE80::5054:FF:FE1B:801E
+    2001:25:18:2::1
+Vlan40                 [up/up]
+    FE80::5054:FF:FE1B:8028
+    2001:25:18:3::1
+Vlan50                 [up/up]
+    FE80::5054:FF:FE1B:8032
+    2001:25:18:4::1
+SWMC#
+
+---------------
+SHOW IPV6 ROUTE
+---------------
+
+SWMC#SHOW IPV6 ROUTE
+IPv6 Routing Table - default - 10 entries
+Codes: C - Connected, L - Local, S - Static, U - Per-user Static route
+       B - BGP, R - RIP, I1 - ISIS L1, I2 - ISIS L2
+       IA - ISIS interarea, IS - ISIS summary, D - EIGRP, EX - EIGRP external
+       ND - ND Default, NDp - ND Prefix, DCE - Destination, NDr - Redirect
+       RL - RPL, O - OSPF Intra, OI - OSPF Inter, OE1 - OSPF ext 1
+       OE2 - OSPF ext 2, ON1 - OSPF NSSA ext 1, ON2 - OSPF NSSA ext 2
+       la - LISP alt, lr - LISP site-registrations, ld - LISP dyn-eid
+       lA - LISP away, a - Application
+S   ::/0 [1/0]
+     via 2001:25:18:9::2
+C   2001:25:18:2::/64 [0/0]
+     via Vlan30, directly connected
+L   2001:25:18:2::1/128 [0/0]
+     via Vlan30, receive
+C   2001:25:18:3::/64 [0/0]
+     via Vlan40, directly connected
+L   2001:25:18:3::1/128 [0/0]
+     via Vlan40, receive
+C   2001:25:18:4::/64 [0/0]
+     via Vlan50, directly connected
+L   2001:25:18:4::1/128 [0/0]
+     via Vlan50, receive
+C   2001:25:18:9::/64 [0/0]
+     via GigabitEthernet0/1, directly connected
+L   2001:25:18:9::1/128 [0/0]
+     via GigabitEthernet0/1, receive
+L   FF00::/8 [0/0]
+     via Null0, receive
+SWMC#
+
+-----------------
+SHOW IP DHCP POOL
+-----------------
+
+SWMC#SHOW IP DHCP POOL
+
+Pool TEST :
+ Utilization mark (high/low)    : 100 / 0
+ Subnet size (first/next)       : 0 / 0 
+ Total addresses                : 0
+ Leased addresses               : 0
+ Excluded addresses             : 0
+ Pending event                  : none
+ 0 subnet is currently in the pool 
+
+Pool Academicos :
+ Utilization mark (high/low)    : 100 / 0
+ Subnet size (first/next)       : 0 / 0 
+ Total addresses                : 126
+ Leased addresses               : 1
+ Excluded addresses             : 10
+ Pending event                  : none
+ 1 subnet is currently in the pool :
+ Current index        IP address range                    Leased/Excluded/Total
+ 172.18.9.12          172.18.9.1       - 172.18.9.126      1     / 10    / 126  
+
+Pool Finanzas :
+ Utilization mark (high/low)    : 100 / 0
+ Subnet size (first/next)       : 0 / 0 
+ Total addresses                : 126
+ Leased addresses               : 1
+ Excluded addresses             : 10
+ Pending event                  : none
+ 1 subnet is currently in the pool :
+ Current index        IP address range                    Leased/Excluded/Total
+ 172.18.9.140         172.18.9.129     - 172.18.9.254      1     / 10    / 126  
+          
+Pool Datacenter :
+ Utilization mark (high/low)    : 100 / 0
+ Subnet size (first/next)       : 0 / 0 
+ Total addresses                : 62
+ Leased addresses               : 1
+ Excluded addresses             : 10
+ Pending event                  : none
+ 1 subnet is currently in the pool :
+ Current index        IP address range                    Leased/Excluded/Total
+ 172.18.10.12         172.18.10.1      - 172.18.10.62      1     / 10    / 62   
+SWMC#
+
+--------------------
+SHOW IP DHCP BINDING
+--------------------
+
+SWMC#
+SWMC#SHOW IP DHCP BINDING
+Bindings from all pools not associated with VRF:
+IP address      Client-ID/              Lease expiration        Type       State      Interface
+                Hardware address/
+                User name
+172.18.9.11      0152.5400.1d04.2a       Nov 10 2026 08:37 PM    Automatic  Active     Vlan30
+172.18.9.139     0152.5400.0f60.5c       Nov 10 2026 08:37 PM    Automatic  Active     Vlan40
+172.18.10.11     ff32.39f9.b500.0200.    Nov 10 2026 08:36 PM    Automatic  Active     Vlan50
+                00ab.11d0.fa20.4158.
+                b852.59
+SWMC#
+
+-------------------
+SHOW IPV6 DHCP POOL
+-------------------
+
+SWMC#SHOW IPV6 DHCP POOL
+DHCPv6 pool: TEST
+  Active clients: 0
+DHCPv6 pool: DNS-V6
+  DNS server: 2001:25:18:4::2
+  Domain name: donapanch.lan
+  Active clients: 0
+SWMC#
+
+-----------------------
+SHOW SPANNING-TREE ROOT
+-----------------------
+
+SWMC#SHOW SPANNING-TREE ROOT
+
+                                        Root    Hello Max Fwd
+Vlan                   Root ID          Cost    Time  Age Dly  Root Port
+---------------- -------------------- --------- ----- --- ---  ------------
+VLAN0030          4126 5254.001b.fb71         0    2   20  15                  
+VLAN0040          4136 5254.001b.fb71         0    2   20  15                  
+VLAN0050          4146 5254.001b.fb71         0    2   20  15                  
+VLAN0090          4186 5254.001b.fb71         0    2   20  15                  
+SWMC#
+
+

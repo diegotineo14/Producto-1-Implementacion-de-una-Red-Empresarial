@@ -1,0 +1,81 @@
+----------
+SW3
+----------
+
+enable
+conf t
+no ip domain-lookup 
+line console 0
+ login local
+ exec-timeout 10 0
+ logging synchronous
+exit
+service password-encryption
+banner motd #EL ACCESO NO AUTORIZADO ESTA PROHIBIDO#
+hostname SW3
+ip domain-name donapanch.lan
+spanning-tree mode rapid-pvst
+spanning-tree vlan 10,20,60,70,80 priority 4096
+
+vtp domain R1
+vtp version 2
+vtp password cisco123
+vtp mode server
+
+vlan 10
+ name Estudiantes
+vlan 20
+ name Docentes
+vlan 60
+ name Gestion
+vlan 70
+ name Voz
+vlan 80
+ name Blackhull-R1
+
+interface Gi0/0
+ description Troncal a R1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 80
+ switchport trunk allowed vlan 10,20,60,70,80
+ switchport nonegotiate
+
+interface range Gi0/1-2
+ description EtherChannel a SW4
+ channel-group 1 mode active
+interface Port-channel1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 80
+ switchport trunk allowed vlan 10,20,60,70,80
+ switchport nonegotiate
+
+interface Gi1/0
+ description LAN hacia DOC1
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+
+interface Gi0/3
+ description NO ASIGNADOS
+ switchport mode access
+ switchport access vlan 80
+ shutdown
+
+interface Vlan60
+ description Administracion
+ ip address 172.18.10.66 255.255.255.224
+ ipv6 address 2001:25:18:5::2/64
+ no shutdown
+ip routing
+ip route 0.0.0.0 0.0.0.0 172.18.10.65
+
+enable secret cisco123
+username ADMIN privilege 15 secret cisco123
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 15
+ login local
+ transport input ssh

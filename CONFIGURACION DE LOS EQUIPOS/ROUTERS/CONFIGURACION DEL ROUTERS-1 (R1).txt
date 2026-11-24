@@ -1,0 +1,110 @@
+----------
+R1
+----------
+
+enable
+conf t
+no ip domain-lookup 
+line console 0
+ login local
+ exec-timeout 10 0
+ logging synchronous
+exit
+service password-encryption
+banner motd #EL ACCESO NO AUTORIZADO ESTA PROHIBIDO#
+hostname R1
+ip domain-name donapanch.lan
+ip name-server 172.18.10.2
+ipv6 unicast-routing
+
+ipv6 dhcp pool DNS-V6
+ dns-server 2001:25:18:4::2
+ domain-name donapanch.lan
+
+interface Gi0/0
+ description LAN a SWMC
+ ip address 172.18.10.162 255.255.255.252
+ ipv6 address 2001:25:18:9::2/64
+ no shutdown
+
+interface Gi0/1
+ description Troncal a SW3
+ no ip address
+ no shutdown
+interface Gi0/1.10
+ description Estudiantes
+ encapsulation dot1Q 10
+ ip address 172.18.0.1 255.255.248.0
+ ipv6 address 2001:25:18:0::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+interface Gi0/1.20
+ description Docentes
+ encapsulation dot1Q 20
+ ip address 172.18.8.1 255.255.255.0
+ ipv6 address 2001:25:18:1::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+interface Gi0/1.60
+ description Gestion
+ encapsulation dot1Q 60
+ ip address 172.18.10.65 255.255.255.224
+ ipv6 address 2001:25:18:5::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+interface Gi0/1.70
+ description Voz
+ encapsulation dot1Q 70
+ ip address 172.18.10.97 255.255.255.224
+ ipv6 address 2001:25:18:6::1/64
+ ipv6 nd other-config-flag
+ ipv6 dhcp server DNS-V6
+
+ip route 172.18.9.0 255.255.255.128 172.18.10.161
+ip route 172.18.9.128 255.255.255.128 172.18.10.161
+ip route 172.18.10.0 255.255.255.192 172.18.10.161
+ipv6 route 2001:25:18:2::/64 2001:25:18:9::1
+ipv6 route 2001:25:18:3::/64 2001:25:18:9::1
+ipv6 route 2001:25:18:4::/64 2001:25:18:9::1
+
+ip dhcp excluded-address 172.18.0.1 172.18.0.10
+ip dhcp excluded-address 172.18.8.1 172.18.8.10
+ip dhcp excluded-address 172.18.10.65 172.18.10.67
+ip dhcp excluded-address 172.18.10.97 172.18.10.106
+
+ip dhcp pool Estudiantes
+ network 172.18.0.0 255.255.248.0
+ default-router 172.18.0.1
+ dns-server 172.18.10.2
+ domain-name donapanch.lan
+ip dhcp pool Docentes
+ network 172.18.8.0 255.255.255.0
+ default-router 172.18.8.1
+ dns-server 172.18.10.2
+ domain-name donapanch.lan
+ip dhcp pool Gestion
+ network 172.18.10.64 255.255.255.224
+ default-router 172.18.10.65
+ dns-server 172.18.10.2
+ domain-name donapanch.lan
+ip dhcp pool Voz
+ network 172.18.10.96 255.255.255.224
+ default-router 172.18.10.97
+ dns-server 172.18.10.2
+ domain-name donapanch.lan
+
+interface Gi0/2
+ description NO ASIGNADOS
+ shutdown
+interface Gi0/3
+ description NO ASIGNADOS
+ shutdown
+
+enable secret cisco123
+username ADMIN privilege 15 secret cisco123
+crypto key generate rsa
+2048
+ip ssh version 2
+line vty 0 4
+ login local
+ transport input ssh
