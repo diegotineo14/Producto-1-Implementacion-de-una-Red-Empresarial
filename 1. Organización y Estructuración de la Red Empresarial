@@ -1,0 +1,48 @@
+# Producto 1 – Implementación de Red Empresarial (Grupo #2)
+
+Documentación técnica de la red implementada en Cisco Modeling Labs (CML). Se divide en tres partes: arquitectura e infraestructura, direccionamiento y diseño de VLAN y dominios VTP.
+
+# 1. Arquitectura e infraestructura de la red
+
+La red se divide en dos lados conectados por un único enlace ruteado. El lado SWMC está formado por el switch multicapa SWMC y los switches SW1 y SW2. El lado R1 está formado por el router R1 y los switches SW3 y SW4. El servidor Ubuntu (DNS) y las PCs de prueba se conectan a los switches de acceso.
+
+SW1 ─┐
+     ├─ SWMC ── (P2P /30) ── R1 ── SW3 ═(Po1)═ SW4
+SW2 ─┘
+
+# Enlaces
+
+  Enlace	      Puertos	              Tipo	                              Detalle
+SWMC ↔ SW1  Gi0/2 ↔ Gi0/0	      Troncal 802.1Q	          VLAN nativa 90, permitidas 30, 40, 50 y 90
+SWMC ↔ SW2	Gi0/0 ↔ Gi0/0	      Troncal 802.1Q	          VLAN nativa 90, permitidas 30, 40, 50 y 90
+SWMC ↔ R1	  Gi0/1 ↔ Gi0/0	      Enlace punto a punto     ruteado	Red 172.18.10.160/30 y 2001:25:18:9::/64
+R1 ↔ SW3	  Gi0/1 ↔ Gi0/0	      Troncal 802.1Q	          VLAN nativa 80, permitidas 10, 20, 60, 70 y 80
+SW3 ↔ SW4	  Gi0/1-2 ↔ Gi0/1-2	  EtherChannel	            Troncal con VLAN nativa 80
+
+
+# Equipos finales
+
+Equipo	Conectado a	VLAN
+
+DNS	  SW1 Gi0/1	  50 – Datacenter
+ACA1	SW2 Gi0/2	  30 – Académicos
+FIN1	SW2 Gi1/0	  40 – Finanzas
+DOC1	SW3 Gi1/0	  20 – Docentes
+EST1	SW4 Gi2/0	  10 – Estudiantes
+GES1	SW4 Gi3/0	  60 – Gestión
+
+# Enrutamiento entre VLAN
+
+Cada lado resuelve el enrutamiento inter-VLAN con un mecanismo distinto:
+
+- Lado SWMC: interfaces virtuales (SVI) en el switch multicapa para las VLAN 30, 40 y 50.
+- Lado R1: Router-on-a-Stick, con una subinterfaz 802.1Q en la Gi0/1 de R1 por cada VLAN (10, 20, 60 y 70).
+
+Para comunicar ambos lados se usan rutas estáticas, tanto en IPv4 como en IPv6. R1 tiene una ruta hacia cada red del SWMC, y el SWMC una ruta por defecto hacia R1. Los switches de capa 2 (SW1 a SW4) tienen ip routing y una ruta por defecto hacia su gateway, para ser administrables desde otras redes.
+
+# Administración y seguridad
+
+Los switches SW1 y SW2 se administran por la VLAN 50 y los switches SW3 y SW4 por la VLAN 60.
+El acceso remoto es solo por SSH versión 2, con usuario local.
+Los puertos sin uso quedan en una VLAN Blackhull y apagados (shutdown).
+Servicios: DHCP repartido entre SWMC y R1, y DNS (dnsmasq) en el servidor Ubuntu para el dominio donapanch.lan.
