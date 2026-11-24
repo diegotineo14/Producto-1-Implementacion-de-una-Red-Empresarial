@@ -1,0 +1,36 @@
+3. VLAN y diseño del dominio VTP
+VLAN
+
+Las VLAN se numeran de 10 en 10, en el mismo orden del diseño de direccionamiento, y conservan los mismos identificadores en toda la red.
+
+ID	   Nombre	         Lado	          Uso
+10	  Estudiantes	      R1	      Red de estudiantes (1500 hosts)
+20	  Docentes	        R1	      Red de docentes
+30	  Academicos	     SWMC	      Red académica
+40	  Finanzas	       SWMC	      Red de finanzas
+50	  Datacenter	     SWMC	      Servidor DNS y administración de SW1 y SW2
+60	  Gestion	          R1	      Gestión y administración de SW3 y SW4
+70	  Voz	              R1	      Telefonía
+80	  Blackhull-R1	    R1	      VLAN nativa de los troncales del lado R1 y destino de puertos sin uso
+90	  Blackhull-SWMC	  SWMC	    VLAN nativa de los troncales del lado SWMC y destino de puertos sin uso
+
+Las VLAN Blackhull no tienen SVI ni subinterfaz, así que no se enrutan. Como la VLAN nativa recibe el tráfico sin etiqueta, usar una VLAN aislada evita que ese tráfico llegue a una red real.
+
+# Dominios VTP
+
+La red usa dos dominios VTP independientes, uno por cada lado. Como ambos lados se conectan por un enlace ruteado y no por un troncal, ninguna VLAN necesita cruzar de un lado al otro, así que cada lado administra sus propias VLAN.
+
+Dominio	      Servidor	      Clientes	    VLAN que distribuye
+SWMC	          SWMC	        SW1, SW2	      30, 40, 50 y 90
+R1	            SW3	            SW4	          10, 20, 60, 70 y 80
+
+Se usa VTP versión 2 y cada dominio está protegido con contraseña.
+Las VLAN se crean solo en el servidor y se replican a los clientes, lo que evita configurarlas switch por switch y mantiene consistente la base de datos (se verifica con el mismo MD5 digest en servidor y clientes en show vtp status).
+Troncales
+Troncales 802.1Q con DTP desactivado (switchport nonegotiate).
+Solo se permiten las VLAN de cada dominio en sus troncales.
+VLAN nativa 90 en el lado SWMC y 80 en el lado R1.
+Entre SW3 y SW4 hay un EtherChannel (Port-channel 1) con LACP en modo activo, que aporta más ancho de banda y redundancia.
+Spanning Tree
+
+Se usa Rapid PVST+. El SWMC es el puente raíz de las VLAN 30, 40, 50 y 90 y el SW3 el de las VLAN 10, 20, 60, 70 y 80, ambos con prioridad 4096. Los puertos hacia equipos finales usan PortFast.
